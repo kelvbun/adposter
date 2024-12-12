@@ -1,0 +1,4 @@
+git+https://github.com/dolfies/discord.py-self@master#egg=discord.py-self
+git+https://github.com/Xtr4F/PyCharacterAI
+python-dotenv
+openai
