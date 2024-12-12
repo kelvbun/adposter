@@ -167,5 +167,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-promo.text
+promo.txt
 shop.txt
