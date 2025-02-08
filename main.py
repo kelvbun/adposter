@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 class adposter(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
