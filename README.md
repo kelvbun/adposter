@@ -64,5 +64,3 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## Contact
 For questions or suggestions, reach out via Discord or open an issue in the repository.
 ```
-
-You can copy and paste this into your `README.md` file. Let me know if you need any changes! 🚀
