@@ -1,6 +1,6 @@
 WARNING: THIS IS A 2 HOUR RUSHED SHITTY BOT
 
-```
+
 # Discord Ad Poster Bot
 
 ## Overview
@@ -63,4 +63,3 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## Contact
 For questions or suggestions, reach out via Discord or open an issue in the repository.
-```
