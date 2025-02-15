@@ -21,20 +21,10 @@ class Macro(commands.Cog):
             "test-shop": "test-data/test-shop.txt",
         }
 
-        self.channel_name_pattern = r"(?:\b|[^a-zA-Z0-9])(?:sell|yours|your|you|clb|clbs|collab|collabs|ur-promo|ur-promos|ur-collabs|ur-collabs|ur-shop|ur-shops|ur-server|ur-servers|shop|shops|urpromo|urpromos)(?:\b|[^a-zA-Z0-9])"
+        self.channel_name_pattern = r'(?:\b|[^a-zA-Z0-9])(?:sell|yours?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])'
 
     @commands.command()
     async def send(self, ctx, file: str, *, message: str) -> None:
-        """
-        send a message to all channels in a file
-
-        parameters
-        file: str
-            the file to read the channels from
-        message: str
-            the message to send to the channels
-        """
-
         if self.data.get(file) is None:
             return await ctx.send(f"{file} was not found in the data dictionary")
 
@@ -98,14 +88,6 @@ class Macro(commands.Cog):
 
     @commands.command(name="check")
     async def check(self, ctx, file: str) -> None:
-        """
-        check the channels in a file
-
-        parameters
-        file: str
-            the file to read the channels from
-        """
-
         if self.data.get(file) is None:
             return await ctx.send(f"{file} was not found")
 
@@ -163,10 +145,6 @@ class Macro(commands.Cog):
 
     @commands.command(name="fetch_all")
     async def fetch_all(self, ctx, file: str) -> None:
-        """
-        analyze all channels in the guilds the bot is in
-        """
-
         channel_count = 0
         guild_channel_stored = []
 

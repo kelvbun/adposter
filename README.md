@@ -61,4 +61,4 @@ This project is licensed under [MIT License](LICENSE).
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ## Contact
-For questions or suggestions, reach out via Discord or open an issue in the repository.
+For questions or suggestions, reach out via discord (kelivein) or open an issue in the repository.
