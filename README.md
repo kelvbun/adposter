@@ -50,9 +50,9 @@ Ensure you have the following installed:
 
 ## Commands
 - `-v- send <file> <message>`: Sends a message to channels listed in the specified file.
-- `-v- check <file>`: Checks the validity of channels in a file.
+- `-v- check <file>`: Checks the validity of channels in a file.  (NOT ADDED YET SOON)
 - `-v- scan <file>`: Fetches and stores matching channels in the file. By default `<file>` is promo
-- `-v- show <file>`: Displays stored channels.
+- `-v- show <file>`: Displays stored channels. (NOT ADDED YET SOON)
 
 ## License
 This project is licensed under [MIT License](LICENSE).
