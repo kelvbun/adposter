@@ -15,10 +15,10 @@ class Macro(commands.Cog):
         self.bot: commands.Bot = bot
         self.regex = r'(?:\b|[^a-zA-Z0-9])(?:sell|yours?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])'
         self.path: dict = {
-            "promo": "data/promo.txt",
-            "shop": "data/shop.txt",
-            "test-promo": "test-data/test-promo.txt",
-            "test-shop": "test-data/test-shop.txt",
+            'promo': 'data/promo.txt',
+            'shop': 'data/shop.txt',
+            'test-promo': 'test-data/test-promo.txt',
+            'test-shop': 'test-data/test-shop.txt',
         }
         self.channel_cache: List[str] = []
 
@@ -31,7 +31,7 @@ class Macro(commands.Cog):
         return bucket
 
     @commands.command(name = 'scan')
-    async def scan_channel(self, ctx: commands.Context, file: str):
+    async def scan_channel(self, ctx: commands.Context, file: str) -> None:
         try:
             file_path = self.path[file]
             filter_out = []
@@ -49,7 +49,32 @@ class Macro(commands.Cog):
                             else:
                                 f.write(f"{id}.{guild.id}\n")
         except KeyError:
-            return print('404 no such path') 
+            return print('[404]: no such path') 
+        
+        await ctx.send(self.channel_cache)
+
+
+    @commands.command(name = 'send')
+    async def send_channels(self, ctx: commands.Context, file: str, *, arg: str) -> None:
+        try:
+            file_path = self.path[file]
+
+            with open(file_path, "r+") as f:
+                f.seek(0)
+                self.channel_cache = f.readlines()
+                strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
+
+                for id in strip_channel_cache:
+                    try:
+                        channel = self.bot.get_channel(int(id))
+                        await channel.send(arg)
+                    except None or discord.errors.Forbidden:
+                        new_lines = [line for line in self.channel_cache if line.strip() != id.strip()]
+                        f.writelines(new_lines)
+                        print('[404]: no such channel')
+
+        except KeyError:
+            return print('[404]: no such path')
         
         await ctx.send(self.channel_cache)
 
