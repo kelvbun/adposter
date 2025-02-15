@@ -7,15 +7,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class adposter(commands.Bot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     async def on_ready(self):
-        print(self.user.id)
+        print(f'[200]: {self.user.name} | {self.user.id}')
 
     async def setup_hook(self):
-        self.session = aiohttp.ClientSession()
-        self.webhook = os.getenv("WEBHOOK_URL")
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 await bot.load_extension(f'cogs.{filename[:-3]}')
