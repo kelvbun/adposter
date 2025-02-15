@@ -48,6 +48,7 @@ class Macro(commands.Cog):
                                 pass
                             else:
                                 f.write(f"{id}.{guild.id}\n")
+                                
         except KeyError:
             return print('[404]: no such path') 
         
@@ -65,9 +66,13 @@ class Macro(commands.Cog):
                 strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
 
                 for id in strip_channel_cache:
+                    random_delay = random.randint(5, 12)
+                    await asyncio.sleep(random_delay)
+                    
                     try:
                         channel = self.bot.get_channel(int(id))
                         await channel.send(arg)
+
                     except None or discord.errors.Forbidden:
                         new_lines = [line for line in self.channel_cache if line.strip() != id.strip()]
                         f.writelines(new_lines)
