@@ -83,6 +83,35 @@ class Macro(commands.Cog):
         
         await ctx.send(self.channel_cache)
 
+    @commands.command(name = 'show')
+    async def show_channels(self, ctx: commands.Context, file: str) -> None:
+        try:
+            file_path = self.path[file]
+
+            with open(file_path, "r+") as f:
+                f.seek(0)
+                self.channel_cache = f.readlines()
+                strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
+
+                for id in strip_channel_cache:
+                    try:
+                        channel = self.bot.get_channel(int(id))
+                        if channel:
+                            await asyncio.sleep(3)
+                            await ctx.send(channel.mention)
+
+                    except None or discord.errors.Forbidden:
+                        new_lines = [line for line in self.channel_cache if line.strip() != id.strip()]
+                        f.writelines(new_lines)
+                        print('[404]: no such channel')
+
+        except KeyError:
+            return print('[404]: no such path')
+        
+        await ctx.send(self.channel_cache)
+
+    
+
 
     
 
