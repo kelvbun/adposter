@@ -9,6 +9,8 @@ load_dotenv()
 class adposter(commands.Bot):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.session = aiohttp.ClientSession()
+        self.webhook = os.getenv('WEBHOOK')
 
     async def on_ready(self):
         print(f'[200]: {self.user.name} | {self.user.id}')
