@@ -53,6 +53,9 @@ class Macro(commands.Cog):
         
         await ctx.send(self.channel_cache)
 
+
+    
+
         
 
 

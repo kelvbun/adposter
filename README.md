@@ -51,7 +51,7 @@ Ensure you have the following installed:
 ## Commands
 - `-v- send <file> <message>`: Sends a message to channels listed in the specified file.
 - `-v- check <file>`: Checks the validity of channels in a file.
-- `-v- fetch_all <file>`: Fetches and stores matching channels in the file.
+- `-v- scan <file>`: Fetches and stores matching channels in the file. By default `<file>` is promo
 - `-v- show <file>`: Displays stored channels.
 
 ## License
@@ -61,4 +61,4 @@ This project is licensed under [MIT License](LICENSE).
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ## Contact
-For questions or suggestions, reach out via discord (kelivein) or open an issue in the repository.
+For questions or suggestions, reach out via discord (@kelivein) or open an issue in the repository.
