@@ -16,7 +16,7 @@ class Log(commands.Cog):
             return
 
         webhook = discord.Webhook.from_url(
-            self.bot.webhook, session=self.bot.session)
+            self.bot.webhook, session = self.bot.session)
         await webhook.send(f"{user} was banned from {guild}")
 
     @commands.Cog.listener("on_member_remove")
@@ -26,5 +26,5 @@ class Log(commands.Cog):
             return
 
         webhook = discord.Webhook.from_url(
-            self.bot.webhook, session=self.bot.session)
+            self.bot.webhook, session = self.bot.session)
         await webhook.send(f"{member} was kicked from {member.guild}")

@@ -26,7 +26,7 @@ class Macro(commands.Cog):
             'test-shop': 'test-data/test-shop.txt',
         }
         self.channel_cache: List[str] = []
-        self.strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
+        self.strip_channel_cache = []
     
     def cog_unload(self) -> None:
         self.task_autopost.cancel()
@@ -39,7 +39,7 @@ class Macro(commands.Cog):
 
         return bucket
     
-    @tasks.loop(minutes = os.getenv('CLOCK'))
+    @tasks.loop(minutes = 120)
     async def task_autopost(self) -> None:
         if self.toggle_clock:
             for channel in self.strip_channel_cache:
@@ -73,9 +73,7 @@ class Macro(commands.Cog):
                                 f.write(f"{id}.{guild.id}\n")
                                 
         except KeyError:
-            return print('[404]: no such path') 
-        
-        await ctx.send(self.channel_cache)
+            return print('[404]: no such path')
 
     @commands.command(name = 'send')
     async def send_channels(self, ctx: commands.Context, file: str, *, arg: str) -> None:
@@ -85,7 +83,7 @@ class Macro(commands.Cog):
             with open(file_path, "r+") as f:
                 f.seek(0)
                 self.channel_cache = f.readlines()
-
+                self.strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
                 for id in self.strip_channel_cache:
                     random_delay = random.randint(5, 12)
                     await asyncio.sleep(random_delay)
@@ -101,8 +99,6 @@ class Macro(commands.Cog):
 
         except KeyError:
             return print('[404]: no such path')
-        
-        await ctx.send(self.channel_cache)
 
     @commands.command(name = 'show')
     async def show_channels(self, ctx: commands.Context, file: str) -> None:
@@ -112,6 +108,7 @@ class Macro(commands.Cog):
             with open(file_path, "r+") as f:
                 f.seek(0)
                 self.channel_cache = f.readlines()
+                self.strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
 
                 for id in self.strip_channel_cache:
                     try:
