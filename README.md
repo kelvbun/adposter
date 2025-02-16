@@ -32,7 +32,8 @@ Ensure you have the following installed:
    - Add the following:
      ```
      TOKEN=your-bot-token
-     WEBHOOK_URL=your-webhook-url
+     WEBHOOK=your-webhook-url
+     CLOCK=your-recurrent-task-in-minutes
      ```
 
 ## Usage
