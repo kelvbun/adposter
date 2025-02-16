@@ -28,10 +28,10 @@ class Macro(commands.Cog):
         self.channel_cache: List[str] = []
         self.strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
     
-    def cog_unload(self):
+    def cog_unload(self) -> None:
         self.task_autopost.cancel()
 
-    def f_channels(self, guild):
+    def f_channels(self, guild) -> List[str]:
         bucket: List[str] = []
         for channel in guild.channels:
             if re.search(self.regex, channel.name, re.IGNORECASE):
@@ -40,7 +40,7 @@ class Macro(commands.Cog):
         return bucket
     
     @tasks.loop(minutes = os.getenv('CLOCK'))
-    async def task_autopost(self):
+    async def task_autopost(self) -> None:
         if self.toggle_clock:
             for channel in self.strip_channel_cache:
                 random_delay = random.randint(6, 9)
@@ -50,7 +50,7 @@ class Macro(commands.Cog):
                 await channel.send(self.ad)
 
     @task_autopost.before_loop
-    async def before_auto_clock(self):
+    async def before_auto_clock(self) -> None:
         await self.bot.wait_until_ready()
 
     @commands.command(name = 'scan')
@@ -132,18 +132,22 @@ class Macro(commands.Cog):
         await ctx.send(self.channel_cache)
 
     @commands.command(name = 'set_clock')
-    async def set_clock(self, ctx: commands.Context, min: int):
+    async def set_clock(self, ctx: commands.Context, min: int) -> None:
         os.environ['CLOCK'] = min
         await ctx.send(f'set clock to: {min} mins')
 
     @commands.command(name = 'toggle_clock')
-    async def toggle_clock(self, ctx: commands.Context):
+    async def toggle_clock(self, ctx: commands.Context) -> None:
         if self.clock_toggled:
             self.clock_toggled = False
             await ctx.send('turned off recurring posting')
         else:
             self.clock_toggled = True
             await ctx.send('turned on recurring posting')
+
+    @commands.command(name = 'set_ad')
+    async def set_ad(self, ctx: commands.Context, *, ad: str) -> None:
+        pass
             
 
 
