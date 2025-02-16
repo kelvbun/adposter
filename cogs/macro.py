@@ -3,8 +3,10 @@ import random
 import re
 from typing import List
 
+import os 
+
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 
 async def setup(bot) -> None:
@@ -13,6 +15,9 @@ async def setup(bot) -> None:
 class Macro(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.clock_toggled: bool = False
+        self.ad: str = ''
+        self.task_autopost.start()
         self.regex = r'(?:\b|[^a-zA-Z0-9])(?:sell|yours?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])'
         self.path: dict = {
             'promo': 'data/promo.txt',
@@ -21,6 +26,10 @@ class Macro(commands.Cog):
             'test-shop': 'test-data/test-shop.txt',
         }
         self.channel_cache: List[str] = []
+        self.strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
+    
+    def cog_unload(self):
+        self.task_autopost.cancel()
 
     def f_channels(self, guild):
         bucket: List[str] = []
@@ -29,6 +38,20 @@ class Macro(commands.Cog):
                 bucket.append(str(channel.id))
 
         return bucket
+    
+    @tasks.loop(minutes = os.getenv('CLOCK'))
+    async def task_autopost(self):
+        if self.toggle_clock:
+            for channel in self.strip_channel_cache:
+                random_delay = random.randint(6, 9)
+                channel = self.bot.get_channel(channel)
+                
+                await asyncio.sleep(random_delay)
+                await channel.send(self.ad)
+
+    @task_autopost.before_loop
+    async def before_auto_clock(self):
+        await self.bot.wait_until_ready()
 
     @commands.command(name = 'scan')
     async def scan_channel(self, ctx: commands.Context, file: str) -> None:
@@ -63,9 +86,8 @@ class Macro(commands.Cog):
             with open(file_path, "r+") as f:
                 f.seek(0)
                 self.channel_cache = f.readlines()
-                strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
 
-                for id in strip_channel_cache:
+                for id in self.strip_channel_cache:
                     random_delay = random.randint(5, 12)
                     await asyncio.sleep(random_delay)
                     
@@ -91,9 +113,8 @@ class Macro(commands.Cog):
             with open(file_path, "r+") as f:
                 f.seek(0)
                 self.channel_cache = f.readlines()
-                strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
 
-                for id in strip_channel_cache:
+                for id in self.strip_channel_cache:
                     try:
                         channel = self.bot.get_channel(int(id))
                         if channel:
@@ -109,6 +130,22 @@ class Macro(commands.Cog):
             return print('[404]: no such path')
         
         await ctx.send(self.channel_cache)
+
+    @commands.command(name = 'set_clock')
+    async def set_clock(self, ctx: commands.Context, min: int):
+        os.environ['CLOCK'] = min
+        await ctx.send(f'set clock to: {min} mins')
+
+    @commands.command(name = 'toggle_clock')
+    async def toggle_clock(self, ctx: commands.Context):
+        if self.clock_toggled:
+            self.clock_toggled = False
+            await ctx.send('turned off recurring posting')
+        else:
+            self.clock_toggled = True
+            await ctx.send('turned on recurring posting')
+            
+
 
     
 
