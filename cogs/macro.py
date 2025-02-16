@@ -77,7 +77,6 @@ class Macro(commands.Cog):
         
         await ctx.send(self.channel_cache)
 
-
     @commands.command(name = 'send')
     async def send_channels(self, ctx: commands.Context, file: str, *, arg: str) -> None:
         try:
@@ -147,7 +146,8 @@ class Macro(commands.Cog):
 
     @commands.command(name = 'set_ad')
     async def set_ad(self, ctx: commands.Context, *, ad: str) -> None:
-        pass
+        self.ad = ad
+        await ctx.send(ad)
             
 
 
