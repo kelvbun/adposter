@@ -3,12 +3,12 @@
 # Discord Ad Poster Bot
 
 ## Overview
-This project is a Discord bot designed to automate advertisement posting and moderation in Discord servers. It includes functionalities for sending promotional messages, checking and managing channels, and logging events related to bans and removals.
+This project is a Discord bot designed to automate advertisement posting and moderation in Discord servers. It includes functionalities for sending promotional messages, checking and managing channels, and logging events related to bans and removals. This is for educational purposes.
 
 ## Features
-- **Automated Ad Posting**: Sends promotional messages to specified channels.
+- **Automated Ad Posting**: Sends promotional messages to specified channels of a certain community.
 - **Channel Validation**: Checks and verifies channels before sending messages.
-- **Event Logging**: Logs member bans and removals.
+- **Event Logging**: Logs user bans and removals.
 - **Channel Discovery**: Fetches and stores all channels matching predefined criteria.
 
 ## Installation
