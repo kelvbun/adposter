@@ -34,7 +34,7 @@ class adposter(commands.Bot):
 
 if __name__ == "__main__":
     bot = adposter(
-        command_prefix="-v-",
+        command_prefix=str(os.getenv("PREFIX")),
         user_bot=True,
         case_insensitive=True,
         max_ratelimit_timeout=1,
