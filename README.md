@@ -1,6 +1,6 @@
 # WARNING: THIS IS A 2 HOUR RUSHED SHITTY BOT
 
-# Overview
+## Overview
 This project is a Discord bot designed to automate advertisement posting and moderation in Discord servers. It includes functionalities for sending promotional messages, checking and managing channels, and logging events related to bans and removals. This is for educational purposes.
 
 ## Features
