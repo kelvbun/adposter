@@ -31,6 +31,7 @@ Ensure you have the following installed:
      ```
      TOKEN=your-bot-token
      WEBHOOK=your-webhook-url
+     PREFIX=your-prefix
      CLOCK=your-recurrent-task-in-minutes
      ```
 
@@ -39,7 +40,7 @@ Ensure you have the following installed:
    ```sh
    python main.py
    ```
-2. Use the command prefix `-v-` to interact with the bot.
+2. Use the command prefix you set to interact with the bot.
 
 ## File Structure
 - **main.py**: Initializes and runs the bot.
@@ -48,10 +49,10 @@ Ensure you have the following installed:
 - **requirements.txt**: Lists dependencies for installation.
 
 ## Commands
-- `-v- send <file> <message>`: Sends a message to channels listed in the specified file.
-- `-v- check <file>`: Checks the validity of channels in a file.  (NOT ADDED YET SOON)
-- `-v- scan <file>`: Fetches and stores matching channels in the file. By default `<file>` is promo
-- `-v- show <file>`: Displays stored channels.
+- `<prefix>send <file> <message>`: Sends a message to channels listed in the specified file.
+- `<prefix>check <file>`: Checks the validity of channels in a file.  (NOT ADDED YET SOON)
+- `<prefix>scan <file>`: Fetches and stores matching channels in the file. By default `<file>` is promo
+- `<prefix>show <file>`: Displays stored channels.
 
 ## License
 This project is licensed under [MIT License](LICENSE).
