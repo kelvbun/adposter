@@ -43,7 +43,7 @@ class Macro(commands.Cog):
                     if len(matches) > 2:
                         bucket.append(str(channel.id))
                 except discord.Forbidden:
-                    continue
+                    continue #forbidden
 
         return bucket
 
