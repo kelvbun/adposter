@@ -1,51 +1,59 @@
 import asyncio
 import random
 import re
-from typing import List
 
-import os 
+from typing import cast
+import os
 
 import discord
 from discord.ext import commands, tasks
 
 
-async def setup(bot) -> None:
+async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Macro(bot))
 
+
 class Macro(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
-        self.clock_toggled: bool = False
-        self.ad: str = ''
-        self.task_autopost.start()
-        self.regex = r'(?:\b|[^a-zA-Z0-9])(?:sell|yours?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])'
+        self.ad: str = ""
+        self.invite_regex = r"(?:https?://)?discord(?:app)?\.(?:com/invite|gg)/[a-zA-Z0-9]+/?"
+        self.channel_regex = r"(?:\b|[^a-zA-Z0-9])(?:sell|yours?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
         self.path: dict = {
-            'promo': 'data/promo.txt',
-            'shop': 'data/shop.txt',
-            'test-promo': 'test-data/test-promo.txt',
-            'test-shop': 'test-data/test-shop.txt',
+            "promo": "data/promo.txt",
+            "shop": "data/shop.txt",
+            "test-promo": "test-data/test-promo.txt",
+            "test-shop": "test-data/test-shop.txt",
         }
-        self.channel_cache: List[str] = []
-        self.strip_channel_cache = []
-    
-    def cog_unload(self) -> None:
+        self.channel_cache: list[str] = []
+        self.strip_channel_cache: list = []
+
+    async def cog_unload(self) -> None:
         self.task_autopost.cancel()
 
-    def f_channels(self, guild) -> List[str]:
-        bucket: List[str] = []
+    async def f_channels(self, guild: discord.Guild) -> list[str]:
+        bucket: list[str] = []
         for channel in guild.channels:
-            if re.search(self.regex, channel.name, re.IGNORECASE):
-                bucket.append(str(channel.id))
+            if re.search(self.channel_regex, channel.name, re.IGNORECASE) and isinstance(channel, discord.TextChannel):
+                try:
+                    messages = [message.content async for message in channel.history(limit=10, oldest_first=False)]
+                    pattern = re.compile(self.invite_regex, re.IGNORECASE)
+                    matches = list(filter(pattern.search, messages))
+
+                    if len(matches) > 2:
+                        bucket.append(str(channel.id))
+                except discord.Forbidden:
+                    continue
 
         return bucket
-    
-    @tasks.loop(minutes = 120)
+
+    @tasks.loop(minutes=120)
     async def task_autopost(self) -> None:
-        if self.toggle_clock:
-            for channel in self.strip_channel_cache:
-                random_delay = random.randint(6, 9)
-                channel = self.bot.get_channel(channel)
-                
+        for channel_id in self.strip_channel_cache:
+            random_delay = random.randint(6, 9)
+            channel = self.bot.get_channel(int(channel_id))
+
+            if channel and isinstance(channel, discord.TextChannel | discord.Thread):
                 await asyncio.sleep(random_delay)
                 await channel.send(self.ad)
 
@@ -53,7 +61,7 @@ class Macro(commands.Cog):
     async def before_auto_clock(self) -> None:
         await self.bot.wait_until_ready()
 
-    @commands.command(name = 'scan')
+    @commands.command(name="scan")
     async def scan_channel(self, ctx: commands.Context, file: str) -> None:
         try:
             file_path = self.path[file]
@@ -64,104 +72,102 @@ class Macro(commands.Cog):
                 self.channel_cache = f.readlines()
 
                 for guild in self.bot.guilds:
-                    filter_out = self.f_channels(guild)
+                    filter_out = await self.f_channels(guild)
                     if filter_out:
                         for id in filter_out:
-                            if any(aid.startswith(id) for aid in self.channel_cache): # do i make a cache system (?)
+                            if any(
+                                aid.startswith(id) for aid in self.channel_cache
+                            ):  # do i make a cache system (?)
                                 pass
                             else:
                                 f.write(f"{id}.{guild.id}\n")
-                                
-        except KeyError:
-            return print('[404]: no such path')
 
-    @commands.command(name = 'send')
-    async def send_channels(self, ctx: commands.Context, file: str, *, arg: str) -> None:
+        except KeyError:
+            return print("[404]: no such path")
+
+    @commands.command(name="send")
+    async def send_channels(
+        self, ctx: commands.Context, file: str, *, arg: str
+    ) -> None:
         try:
             file_path = self.path[file]
 
             with open(file_path, "r+") as f:
                 f.seek(0)
                 self.channel_cache = f.readlines()
-                self.strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
+                self.strip_channel_cache = [
+                    id.split(".")[0] for id in self.channel_cache
+                ]
                 for id in self.strip_channel_cache:
                     random_delay = random.randint(5, 12)
                     await asyncio.sleep(random_delay)
-                    
+
                     try:
                         channel = self.bot.get_channel(int(id))
                         await channel.send(arg)
 
                     except None or discord.errors.Forbidden:
-                        new_lines = [line for line in self.channel_cache if line.strip() != id.strip()]
+                        new_lines = [
+                            line
+                            for line in self.channel_cache
+                            if line.strip() != id.strip()
+                        ]
                         f.writelines(new_lines)
-                        print('[404]: no such channel')
+                        print("[404]: no such channel")
 
         except KeyError:
-            return print('[404]: no such path')
+            print("[404]: no such path")
 
-    @commands.command(name = 'show')
+    @commands.command(name="show")
     async def show_channels(self, ctx: commands.Context, file: str) -> None:
         try:
             file_path = self.path[file]
+            paginator = commands.Paginator(prefix="", suffix="")
 
             with open(file_path, "r+") as f:
                 f.seek(0)
                 self.channel_cache = f.readlines()
-                self.strip_channel_cache = [id.split('.')[0] for id in self.channel_cache]
+                self.strip_channel_cache = [
+                    id.split(".")[0] for id in self.channel_cache
+                ]
 
                 for id in self.strip_channel_cache:
-                    try:
-                        channel = self.bot.get_channel(int(id))
-                        if channel:
-                            await asyncio.sleep(3)
-                            await ctx.send(channel.mention)
-
-                    except None or discord.errors.Forbidden:
-                        new_lines = [line for line in self.channel_cache if line.strip() != id.strip()]
-                        f.writelines(new_lines)
-                        print('[404]: no such channel')
+                    channel = self.bot.get_channel(int(id))
+                    if channel and isinstance(channel, discord.TextChannel):
+                        if (
+                            channel.permissions_for(
+                                cast(discord.Member, ctx.author)
+                            ).view_channel
+                            and channel.permissions_for(
+                                cast(discord.Member, ctx.author)
+                            ).send_messages
+                        ):
+                            paginator.add_line(
+                                f"[{channel.guild.name}]: {channel.mention if channel else 'invalid'}"
+                            )
 
         except KeyError:
-            return print('[404]: no such path')
-        
-        await ctx.send(self.channel_cache)
+            return print("[404]: no such path")
 
-    @commands.command(name = 'set_clock')
+        for page in paginator.pages:
+            await ctx.send(page)
+
+    @commands.command(name="set_clock")
     async def set_clock(self, ctx: commands.Context, min: int) -> None:
-        os.environ['CLOCK'] = min
-        await ctx.send(f'set clock to: {min} mins')
+        os.environ["CLOCK"] = str(min)
+        self.task_autopost.change_interval(minutes=min)
+        await ctx.send(f"set auto post to every {min} mins")
 
-    @commands.command(name = 'toggle_clock')
-    async def toggle_clock(self, ctx: commands.Context) -> None:
-        if self.clock_toggled:
-            self.clock_toggled = False
-            await ctx.send('turned off recurring posting')
-        else:
-            self.clock_toggled = True
-            await ctx.send('turned on recurring posting')
+    @commands.command(name="toggle_clock")
+    async def toggle_clock(self, ctx: commands.Context) -> discord.Message | None:
+        if self.task_autopost.is_running():
+            self.task_autopost.cancel()
+            return await ctx.send("turned off recurring posting")
 
-    @commands.command(name = 'set_ad')
+        self.task_autopost.start()
+        return await ctx.send("turned on recurring posting")
+
+    @commands.command(name="set_ad")
     async def set_ad(self, ctx: commands.Context, *, ad: str) -> None:
         self.ad = ad
         await ctx.send(ad)
-            
-
-
-    
-
-
-    
-
-        
-
-
-    
-
-
-        
-
-
-
-
-        
