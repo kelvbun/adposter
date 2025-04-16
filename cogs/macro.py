@@ -63,6 +63,12 @@ class Macro(commands.Cog):
 
     @commands.command(name="scan")
     async def scan_channel(self, ctx: commands.Context, file: str) -> None:
+        
+        f_guilds = 0
+        for folder in self.bot.settings.guild_folders:
+            if folder.name == 'p':
+                f_guilds = len(folder)
+
         try:
             file_path = self.path[file]
             filter_out = []
@@ -77,17 +83,20 @@ class Macro(commands.Cog):
                         for id in filter_out:
                             if any(
                                 aid.startswith(id) for aid in self.channel_cache
-                            ):  # do i make a cache system (?)
-                                pass
+                            ):
+                                continue
                             else:
                                 f.write(f"{id}.{guild.id}\n")
+                                self.channel_cache.append(f"{id}.{guild.id}\n")
+
+            await ctx.send(f'scanned `{len(self.channel_cache)}/{f_guilds}` channels out of guilds')
 
         except KeyError:
             return print("[404]: no such path")
 
     @commands.command(name="send")
     async def send_channels(
-        self, ctx: commands.Context, file: str, *, arg: str
+        self, ctx: commands.Context, file: str
     ) -> None:
         try:
             file_path = self.path[file]
@@ -104,7 +113,7 @@ class Macro(commands.Cog):
 
                     try:
                         channel = self.bot.get_channel(int(id))
-                        await channel.send(arg)
+                        await channel.send(self.ad)
 
                     except None or discord.errors.Forbidden:
                         new_lines = [
@@ -170,4 +179,6 @@ class Macro(commands.Cog):
     @commands.command(name="set_ad")
     async def set_ad(self, ctx: commands.Context, *, ad: str) -> None:
         self.ad = ad
-        await ctx.send(ad)
+        await ctx.message.add_reaction('\U00002705')
+
+            

@@ -26,7 +26,6 @@ class adposter(commands.Bot):
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
         self.webhook = os.getenv("WEBHOOK")
-
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"cogs.{filename[:-3]}")
