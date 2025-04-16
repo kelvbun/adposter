@@ -19,7 +19,7 @@ class Macro(commands.Cog):
         self.ad: str = ''
         self.ignored: dict[str, int] = {}
         self.invite_regex = r"(?:https?://)?discord(?:app)?\.(?:com/invite|gg)/[a-zA-Z0-9]+/?"
-        self.channel_regex = r"(?:\b|[^a-zA-Z0-9])(?:sell|yours?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
+        self.channel_regex = r"(?:\b|[^a-zA-Z0-9])(?:sell|your?s?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
         self.path: dict = {
             "promo": "data/promo.txt",
             "shop": "data/shop.txt",
@@ -115,7 +115,13 @@ class Macro(commands.Cog):
                     try:
                         channel = self.bot.get_channel(int(id))
                         if isinstance(channel, discord.TextChannel) and channel.guild.id not in self.ignored.items():
-                            await channel.send(self.ad)
+                            history = [message.content async for message in channel.history(limit=1, oldest_first=False)]
+
+                            if history and history[0] != self.ad:
+                                try:
+                                    await channel.send(self.ad)
+                                except discord.RateLimited:
+                                    continue
 
                     except None or discord.errors.Forbidden:
                         new_lines = [
