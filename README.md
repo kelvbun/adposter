@@ -13,12 +13,12 @@ python 3.9+
    git clone https://github.com/kelvbun/adposter
    cd adposter
    ```
-2. Install dependencies:
+2. install dependencies:
    - i highly suggest you use run this in a venv
    ```sh
    pip install -r requirements.txt
    ```
-3. Set up environment variables:
+3. set up environment variables:
    - create a `.env` file in the project root.
    - copy and paste the following:
      ```
@@ -28,14 +28,19 @@ python 3.9+
      CLOCK=your-recurrent-task-in-minutes
      ```
 
-## Commands
-- `<prefix>send <file> <message>`: Sends a message to channels listed in the specified file.
-- `<prefix>check <file>`: Checks the validity of channels in a file.  (NOT ADDED YET SOON)
-- `<prefix>scan <file>`: Fetches and stores matching channels in the file. By default `<file>` is promo
-- `<prefix>show <file>`: Displays stored channels.
+4. start the bot:
+   - activate the venv 
+   - run the bot (macos): 
+   ```sh
+   source venv/bin/activate 
+   python main.py
+   ```
 
-## License
-this project is licensed under [MIT License](LICENSE).
+## Commands
+- `<prefix>send <file> <message>`: sends a message to channels listed in the specified file.
+- `<prefix>check <file>`: checks the validity of channels in a file. (NOT ADDED YET SOON)
+- `<prefix>scan <file>`: fetches and stores matching channels in the file. by default `promo` is promo
+- `<prefix>show <file>`: displays stored channels.
 
 ## Contact
-for questions, suggestions, or contributing reach out via discord (@kelvbun) or open an issue in the repository.
+for questions, suggestions, or contributing reach out via discord (@kelvbun) or open an issue in the repository. please note that this project is under the MIT license.
