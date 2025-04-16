@@ -1,13 +1,13 @@
-# WARNING: THIS IS A 2 HOUR RUSHED SHITTY BOT
-
 ## Overview
-this is simple ad posting bot for owner com, it has client logging + auto channel detection. please be advised that channel detection isn't 100% accurate and this is for education purposes only.
+this is simple ad posting bot for owner com, it has client logging + auto channel detection. please be advised that channel detection isn't 100% accurate. the code is poorly written and for education purposes only. 
 
 ## Installation
 please ensure you have the following installed:
-- python 3.9+
+```sh
+python 3.9+
+```
 
-### Setup
+## Setup
 1. clone the repository:
    ```sh
    git clone https://github.com/kelvbun/adposter
