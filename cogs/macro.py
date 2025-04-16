@@ -16,7 +16,8 @@ async def setup(bot: commands.Bot) -> None:
 class Macro(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
-        self.ad: str = ""
+        self.ad: str = ''
+        self.ignored: dict[str, int] = {}
         self.invite_regex = r"(?:https?://)?discord(?:app)?\.(?:com/invite|gg)/[a-zA-Z0-9]+/?"
         self.channel_regex = r"(?:\b|[^a-zA-Z0-9])(?:sell|yours?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
         self.path: dict = {
@@ -113,7 +114,8 @@ class Macro(commands.Cog):
 
                     try:
                         channel = self.bot.get_channel(int(id))
-                        await channel.send(self.ad)
+                        if isinstance(channel, discord.TextChannel) and channel.guild.id not in self.ignored.items():
+                            await channel.send(self.ad)
 
                     except None or discord.errors.Forbidden:
                         new_lines = [
@@ -179,6 +181,21 @@ class Macro(commands.Cog):
     @commands.command(name="set_ad")
     async def set_ad(self, ctx: commands.Context, *, ad: str) -> None:
         self.ad = ad
+        pattern = re.compile(self.invite_regex, re.IGNORECASE)
+        matches = pattern.findall(ad)
+
+        for code in matches:
+            try:
+                invite = await self.bot.fetch_invite(code)
+                self.ignored[code] = invite.guild.id
+
+            except discord.NotFound:
+                self.ignored.pop(code)
+                continue
+
+            except discord.HTTPException:
+                continue
+
         await ctx.message.add_reaction('\U00002705')
 
             
