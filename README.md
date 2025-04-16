@@ -14,8 +14,9 @@ python 3.9+
    cd adposter
    ```
 2. install dependencies:
-   - i highly suggest you use run this in a venv
+   - i highly suggest you use run this in a venv so
    ```sh
+   python3 -m venv venv
    pip install -r requirements.txt
    ```
 3. set up environment variables:
@@ -29,7 +30,7 @@ python 3.9+
      ```
 
 4. start the bot:
-   - activate the venv 
+   - activate the venv
    - run the bot (macos): 
    ```sh
    source venv/bin/activate 
