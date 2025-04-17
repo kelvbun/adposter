@@ -27,7 +27,9 @@ class Macro(commands.Cog):
             "test-shop": "test-data/test-shop.txt",
         }
         self.channel_cache: list[str] = []
-        self.strip_channel_cache: list = []
+        self.strip_channel_cache: list[str] = [
+            id.split(".")[0] for id in self.channel_cache
+        ]
 
     async def cog_unload(self) -> None:
         self.task_autopost.cancel()
@@ -48,15 +50,28 @@ class Macro(commands.Cog):
 
         return bucket
 
-    @tasks.loop(minutes=120)
+    @tasks.loop(minutes=int(str(os.getenv('CLOCK'))))
     async def task_autopost(self) -> None:
+        self.strip_channel_cache = [
+            id.split(".")[0] for id in self.channel_cache
+        ]
+
+        print(self.strip_channel_cache)
+
         for channel_id in self.strip_channel_cache:
             random_delay = random.randint(6, 9)
             channel = self.bot.get_channel(int(channel_id))
 
-            if channel and isinstance(channel, discord.TextChannel | discord.Thread):
-                await asyncio.sleep(random_delay)
-                await channel.send(self.ad)
+            if isinstance(channel, discord.TextChannel) and channel.guild.id not in list(self.ignored.values()):
+                history = [message.author.id async for message in channel.history(limit=2, oldest_first=False)]
+
+                if history and history[0] != self.bot.user.id:
+                    try:
+                        await asyncio.sleep(random_delay)
+                        await channel.send(self.ad)
+            
+                    except discord.RateLimited:
+                        continue
 
     @task_autopost.before_loop
     async def before_auto_clock(self) -> None:
@@ -114,7 +129,7 @@ class Macro(commands.Cog):
 
                     try:
                         channel = self.bot.get_channel(int(id))
-                        if isinstance(channel, discord.TextChannel) and channel.guild.id not in self.ignored.items():
+                        if isinstance(channel, discord.TextChannel) and channel.guild.id not in list(self.ignored.values()):
                             history = [message.content async for message in channel.history(limit=1, oldest_first=False)]
 
                             if history and history[0] != self.ad:
@@ -168,6 +183,8 @@ class Macro(commands.Cog):
 
         for page in paginator.pages:
             await ctx.send(page)
+        
+        await ctx.message.add_reaction('\U00002705')
 
     @commands.command(name="set_clock")
     async def set_clock(self, ctx: commands.Context, min: int) -> None:
@@ -179,10 +196,11 @@ class Macro(commands.Cog):
     async def toggle_clock(self, ctx: commands.Context) -> discord.Message | None:
         if self.task_autopost.is_running():
             self.task_autopost.cancel()
-            return await ctx.send("turned off recurring posting")
+            await ctx.send("turned off recurring posting")
 
-        self.task_autopost.start()
-        return await ctx.send("turned on recurring posting")
+        else:
+            self.task_autopost.start()
+            await ctx.send("turned on recurring posting")
 
     @commands.command(name="set_ad")
     async def set_ad(self, ctx: commands.Context, *, ad: str) -> None:
