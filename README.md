@@ -17,7 +17,8 @@ python 3.9+
    - i highly suggest you use run this in a venv so
    ```sh
    python3 -m venv venv
-   pip install -r requirements.txt
+   source venv/bin/activate
+   python3 -m pip install -r requirements.txt
    ```
 3. set up environment variables:
    - create a `.env` file in the project root.
@@ -33,7 +34,6 @@ python 3.9+
    - activate the venv
    - run the bot (macos): 
    ```sh
-   source venv/bin/activate 
    python main.py
    ```
 
