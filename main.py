@@ -36,6 +36,7 @@ if __name__ == "__main__":
         command_prefix=str(os.getenv("PREFIX")),
         user_bot=True,
         case_insensitive=True,
+        guild_subscriptions=False,
         max_ratelimit_timeout=1,
     )
 
