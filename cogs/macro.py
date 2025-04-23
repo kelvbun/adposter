@@ -22,15 +22,19 @@ class Macro(commands.Cog):
         self.channel_regex = r"(?:\b|[^a-zA-Z0-9])(?:sell|your?s?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
         self.path: dict = {
             "promo": "data/promo.txt",
-            "shop": "data/shop.txt",
-            "test-promo": "test-data/test-promo.txt",
-            "test-shop": "test-data/test-shop.txt",
+            "test-promo": "data/test-promo.txt",
         }
-        self.channel_cache: list[str] = []
         self.strip_channel_cache: list[str] = [
             id.split(".")[0] for id in self.channel_cache
         ]
 
+    async def cog_load(self) -> None:
+        file_path = self.path['promo']
+
+        with open(file_path, "r+") as f:
+            f.seek(0)
+            self.channel_cache = f.readlines()
+            
     async def cog_unload(self) -> None:
         self.task_autopost.cancel()
 

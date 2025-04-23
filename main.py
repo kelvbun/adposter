@@ -19,9 +19,10 @@ class adposter(commands.Bot):
             if self.user
             else "uhhhh some shit"
         )
+        
         await self.change_presence(
-            status=discord.Status.online,
-        )  # activity=discord.CustomActivity("free ad post bot in about me"),
+            status=discord.Status.offline,
+        )
 
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
@@ -39,5 +40,4 @@ if __name__ == "__main__":
         max_ratelimit_timeout=1,
     )
 
-    bot.run(str(os.getenv("TOKEN")))
-    
+    bot.run(str(os.getenv("TOKEN")), reconnect=True)

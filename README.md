@@ -1,6 +1,11 @@
 ## Overview
 this is simple ad posting bot for owner com, it has client logging + auto channel detection. please be advised that channel detection isn't 100% accurate. the code is poorly written and for education purposes only. 
 
+
+## Quick note
+i've remove shop file + test-shop txt file. also please create a folder for theses promo servers named ``p`` strictly
+
+
 ## Installation
 please ensure you have the following installed:
 ```sh
@@ -38,7 +43,7 @@ python 3.9+
    ```
 
 ## Commands
-- `<prefix>send <file> <message>`: sends a message to channels listed in the specified file.
+- `<prefix>send <file>`: sends a message to channels listed in the specified file.
 - `<prefix>check <file>`: checks the validity of channels in a file. (NOT ADDED YET SOON)
 - `<prefix>scan <file>`: fetches and stores matching channels in the file. by default `promo` is promo
 - `<prefix>show <file>`: displays stored channels.
