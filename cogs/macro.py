@@ -25,9 +25,7 @@ class Macro(commands.Cog):
             "promo": "data/promo.txt",
             "test-promo": "data/test-promo.txt",
         }
-        self.strip_channel_cache: list[str] = [
-            id.split(".")[0] for id in self.channel_cache
-        ]
+        self.strip_channel_cache: list[str] = []
 
     async def cog_load(self) -> None:
         file_path = self.path['promo']
@@ -35,6 +33,12 @@ class Macro(commands.Cog):
         with open(file_path, "r+") as f:
             f.seek(0)
             self.channel_cache = f.readlines()
+            self.strip_channel_cache = [
+                id.split(".")[0] for id in self.channel_cache
+            ]
+        
+        f.close()
+        print(self.strip_channel_cache)
             
     async def cog_unload(self) -> None:
         self.task_autopost.cancel()
@@ -110,6 +114,7 @@ class Macro(commands.Cog):
                                 f.write(f"{id}.{guild.id}\n")
                                 self.channel_cache.append(f"{id}.{guild.id}\n")
 
+            f.close()
             await ctx.send(f'scanned `{len(self.channel_cache)}/{f_guilds}` channels out of guilds')
 
         except KeyError:
@@ -152,6 +157,8 @@ class Macro(commands.Cog):
                         f.writelines(new_lines)
                         print("[404]: no such channel")
 
+            f.close()
+
         except KeyError:
             print("[404]: no such path")
 
@@ -182,6 +189,7 @@ class Macro(commands.Cog):
                             paginator.add_line(
                                 f"[{channel.guild.name}]: {channel.mention if channel else 'invalid'}"
                             )
+            f.close()
 
         except KeyError:
             return print("[404]: no such path")
