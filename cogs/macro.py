@@ -20,6 +20,7 @@ class Macro(commands.Cog):
         self.ignored: dict[str, int] = {}
         self.invite_regex = r"(?:https?://)?discord(?:app)?\.(?:com/invite|gg)/[a-zA-Z0-9]+/?"
         self.channel_regex = r"(?:\b|[^a-zA-Z0-9])(?:sell|your?s?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
+        self.channel_cache: list[str] = []
         self.path: dict = {
             "promo": "data/promo.txt",
             "test-promo": "data/test-promo.txt",
