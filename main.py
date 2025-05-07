@@ -19,7 +19,7 @@ class adposter(commands.Bot):
             if self.user
             else "uhhhh some shit"
         )
-        
+
         await self.change_presence(
             status=discord.Status.offline,
         )
@@ -38,6 +38,7 @@ if __name__ == "__main__":
         user_bot=True,
         case_insensitive=True,
         max_ratelimit_timeout=1,
+        chunk_guilds=False,
     )
 
     bot.run(str(os.getenv("TOKEN")), reconnect=True)

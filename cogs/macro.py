@@ -16,9 +16,11 @@ async def setup(bot: commands.Bot) -> None:
 class Macro(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
-        self.ad: str = ''
+        self.ad: str = ""
         self.ignored: dict[str, int] = {}
-        self.invite_regex = r"(?:https?://)?discord(?:app)?\.(?:com/invite|gg)/[a-zA-Z0-9]+/?"
+        self.invite_regex = (
+            r"(?:https?://)?discord(?:app)?\.(?:com/invite|gg)/[a-zA-Z0-9]+/?"
+        )
         self.channel_regex = r"(?:\b|[^a-zA-Z0-9])(?:sell|your?s?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
         self.channel_cache: list[str] = []
         self.path: dict = {
@@ -28,42 +30,45 @@ class Macro(commands.Cog):
         self.strip_channel_cache: list[str] = []
 
     async def cog_load(self) -> None:
-        file_path = self.path['promo']
+        file_path = self.path["promo"]
 
         with open(file_path, "r+") as f:
             f.seek(0)
             self.channel_cache = f.readlines()
-            self.strip_channel_cache = [
-                id.split(".")[0] for id in self.channel_cache
-            ]
-        
+            self.strip_channel_cache = [id.split(".")[0] for id in self.channel_cache]
+
         f.close()
         print(self.strip_channel_cache)
-            
+
     async def cog_unload(self) -> None:
         self.task_autopost.cancel()
 
     async def f_channels(self, guild: discord.Guild) -> list[str]:
         bucket: list[str] = []
         for channel in guild.channels:
-            if re.search(self.channel_regex, channel.name, re.IGNORECASE) and isinstance(channel, discord.TextChannel):
+            if re.search(
+                self.channel_regex, channel.name, re.IGNORECASE
+            ) and isinstance(channel, discord.TextChannel):
                 try:
-                    messages = [message.content async for message in channel.history(limit=10, oldest_first=False)]
+                    messages = [
+                        message.content
+                        async for message in channel.history(
+                            limit=10, oldest_first=False
+                        )
+                    ]
                     pattern = re.compile(self.invite_regex, re.IGNORECASE)
                     matches = list(filter(pattern.search, messages))
 
                     if len(matches) > 2:
                         bucket.append(str(channel.id))
                 except discord.Forbidden:
-                    continue #forbidden
+                    continue  # forbidden
 
         return bucket
 
-    @tasks.loop(minutes=int(str(os.getenv('CLOCK'))))
+    @tasks.loop(minutes=int(str(os.getenv("CLOCK"))))
     async def task_autopost(self) -> None:
-        self.strip_channel_cache = [
-            id.split(".")[0] for id in self.channel_cache
-        ]
+        self.strip_channel_cache = [id.split(".")[0] for id in self.channel_cache]
 
         print(self.strip_channel_cache)
 
@@ -71,14 +76,19 @@ class Macro(commands.Cog):
             random_delay = random.randint(6, 9)
             channel = self.bot.get_channel(int(channel_id))
 
-            if isinstance(channel, discord.TextChannel) and channel.guild.id not in list(self.ignored.values()):
-                history = [message.author.id async for message in channel.history(limit=2, oldest_first=False)]
+            if isinstance(
+                channel, discord.TextChannel
+            ) and channel.guild.id not in list(self.ignored.values()):
+                history = [
+                    message.author.id
+                    async for message in channel.history(limit=2, oldest_first=False)
+                ]
 
                 if history and history[0] != self.bot.user.id:
                     try:
                         await asyncio.sleep(random_delay)
                         await channel.send(self.ad)
-            
+
                     except discord.RateLimited:
                         continue
 
@@ -88,10 +98,9 @@ class Macro(commands.Cog):
 
     @commands.command(name="scan")
     async def scan_channel(self, ctx: commands.Context, file: str) -> None:
-        
         f_guilds = 0
         for folder in self.bot.settings.guild_folders:
-            if folder.name == 'p':
+            if folder.name == "p":
                 f_guilds = len(folder)
 
         try:
@@ -106,24 +115,22 @@ class Macro(commands.Cog):
                     filter_out = await self.f_channels(guild)
                     if filter_out:
                         for id in filter_out:
-                            if any(
-                                aid.startswith(id) for aid in self.channel_cache
-                            ):
+                            if any(aid.startswith(id) for aid in self.channel_cache):
                                 continue
                             else:
                                 f.write(f"{id}.{guild.id}\n")
                                 self.channel_cache.append(f"{id}.{guild.id}\n")
 
             f.close()
-            await ctx.send(f'scanned `{len(self.channel_cache)}/{f_guilds}` channels out of guilds')
+            await ctx.send(
+                f"scanned `{len(self.channel_cache)}/{f_guilds}` channels out of guilds"
+            )
 
         except KeyError:
             return print("[404]: no such path")
 
     @commands.command(name="send")
-    async def send_channels(
-        self, ctx: commands.Context, file: str
-    ) -> None:
+    async def send_channels(self, ctx: commands.Context, file: str) -> None:
         try:
             file_path = self.path[file]
 
@@ -139,8 +146,15 @@ class Macro(commands.Cog):
 
                     try:
                         channel = self.bot.get_channel(int(id))
-                        if isinstance(channel, discord.TextChannel) and channel.guild.id not in list(self.ignored.values()):
-                            history = [message.content async for message in channel.history(limit=1, oldest_first=False)]
+                        if isinstance(
+                            channel, discord.TextChannel
+                        ) and channel.guild.id not in list(self.ignored.values()):
+                            history = [
+                                message.content
+                                async for message in channel.history(
+                                    limit=1, oldest_first=False
+                                )
+                            ]
 
                             if history and history[0] != self.ad:
                                 try:
@@ -196,8 +210,8 @@ class Macro(commands.Cog):
 
         for page in paginator.pages:
             await ctx.send(page)
-        
-        await ctx.message.add_reaction('\U00002705')
+
+        await ctx.message.add_reaction("\U00002705")
 
     @commands.command(name="set_clock")
     async def set_clock(self, ctx: commands.Context, min: int) -> None:
@@ -233,6 +247,4 @@ class Macro(commands.Cog):
             except discord.HTTPException:
                 continue
 
-        await ctx.message.add_reaction('\U00002705')
-
-            
+        await ctx.message.add_reaction("\U00002705")
