@@ -13,13 +13,13 @@ class Log(commands.Cog):
         self.webhook: str = str(os.getenv("WEBHOOK"))
 
     @commands.Cog.listener("on_member_ban")
-    async def on_member_ban(self, member: discord.Member):
+    async def on_member_ban(self, guild: discord.Guild, member: discord.Member):
 
         if self.bot.user != member:
             return
 
         embed = discord.Embed(
-            description=f"\U000026a0 {member}, you were banned from {member.guild.name}",
+            description=f"\U000026a0 {member}, you were banned from {guild.name}",
             color=discord.Color.red(),
         )
         webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
