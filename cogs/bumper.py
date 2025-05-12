@@ -26,7 +26,7 @@ class Bumper(commands.Cog):
         self.autobumper.cancel()
 
     @tasks.loop(hours=2)
-    async def autobumper(self):
+    async def autobumper(self) -> None:
         channel = self.bot.get_channel(int(str(os.getenv("BUMP_CHANNEL"))))
         random_delay = random.randint(6, 9)
 
