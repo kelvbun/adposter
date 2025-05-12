@@ -24,9 +24,8 @@ class adposter(commands.Bot):
             status=discord.Status.offline,
         )
 
-    async def setup_hook(self):
+    async def setup_hook(self) -> None:
         self.session = aiohttp.ClientSession()
-        self.webhook = os.getenv("WEBHOOK")
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"cogs.{filename[:-3]}")
