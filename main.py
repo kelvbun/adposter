@@ -1,6 +1,5 @@
 import os
 
-import aiohttp
 import discord
 
 from discord.ext import commands
@@ -25,7 +24,6 @@ class adposter(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        self.session = aiohttp.ClientSession()
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"cogs.{filename[:-3]}")

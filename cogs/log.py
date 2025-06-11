@@ -1,5 +1,7 @@
 import discord
 import os
+
+import aiohttp
 from discord.ext import commands
 
 
@@ -10,11 +12,11 @@ async def setup(bot: commands.Bot) -> None:
 class Log(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
+        self.session = aiohttp.ClientSession()
         self.webhook: str = str(os.getenv("WEBHOOK"))
 
     @commands.Cog.listener("on_member_ban")
     async def on_member_ban(self, guild: discord.Guild, member: discord.Member):
-
         if self.bot.user != member:
             return
 
@@ -22,7 +24,7 @@ class Log(commands.Cog):
             description=f"\U000026a0 {member}, you were banned from {guild.name}",
             color=discord.Color.red(),
         )
-        webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
+        webhook = discord.Webhook.from_url(self.webhook, session=self.session)
         await webhook.send(content=member.mention, embed=embed)
 
     @commands.Cog.listener("on_member_remove")
@@ -34,7 +36,7 @@ class Log(commands.Cog):
             description=f"\U000026a0 {member}, you were kicked from {member.guild.name}",
             color=discord.Color.red(),
         )
-        webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
+        webhook = discord.Webhook.from_url(self.webhook, session=self.session)
         await webhook.send(content=member.mention, embed=embed)
 
     @commands.Cog.listener("on_message")
@@ -43,7 +45,7 @@ class Log(commands.Cog):
             return
 
         embed = discord.Embed(description=f"```{message.content}```")
-        webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
+        webhook = discord.Webhook.from_url(self.webhook, session=self.session)
         await webhook.send(
             content=f"client sent a [message]({message.jump_url}):", embed=embed
         )
@@ -54,7 +56,7 @@ class Log(commands.Cog):
             return
 
         embed = discord.Embed(description=f"```{message.content}```")
-        webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
+        webhook = discord.Webhook.from_url(self.webhook, session=self.session)
         await webhook.send(
             content=f"a user has [pinged]({message.jump_url}) client:", embed=embed
         )
@@ -65,5 +67,5 @@ class Log(commands.Cog):
             return
 
         embed = discord.Embed(description=f"```{message.content}```")
-        webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
+        webhook = discord.Webhook.from_url(self.webhook, session=self.session)
         await webhook.send(content="client deleted a message:", embed=embed)

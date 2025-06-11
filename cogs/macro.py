@@ -84,7 +84,7 @@ class Macro(commands.Cog):
                     async for message in channel.history(limit=2, oldest_first=False)
                 ]
 
-                if history and history[0] != self.bot.user.id:
+                if self.bot.user and history and history[0] != self.bot.user.id:
                     try:
                         await asyncio.sleep(random_delay)
                         await channel.send(self.ad)
@@ -99,9 +99,11 @@ class Macro(commands.Cog):
     @commands.command(name="scan")
     async def scan_channel(self, ctx: commands.Context, file: str) -> None:
         f_guilds = 0
-        for folder in self.bot.settings.guild_folders:
-            if folder.name == "p":
-                f_guilds = len(folder)
+
+        if self.bot.settings:
+            for folder in self.bot.settings.guild_folders:
+                if folder.name == "p":
+                    f_guilds = len(folder)
 
         try:
             file_path = self.path[file]
@@ -159,7 +161,7 @@ class Macro(commands.Cog):
                             if history and history[0] != self.ad:
                                 try:
                                     await channel.send(self.ad)
-                                except discord.RateLimited:
+                                except discord.RateLimited | discord.HTTPException:
                                     continue
 
                     except None or discord.errors.Forbidden:
@@ -238,7 +240,7 @@ class Macro(commands.Cog):
         for code in matches:
             try:
                 invite = await self.bot.fetch_invite(code)
-                self.ignored[code] = invite.guild.id
+                self.ignored[code] = invite.guild.id if invite.guild else 0
 
             except discord.NotFound:
                 self.ignored.pop(code)
