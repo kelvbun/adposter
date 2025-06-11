@@ -89,7 +89,7 @@ class Macro(commands.Cog):
                         await asyncio.sleep(random_delay)
                         await channel.send(self.ad)
 
-                    except discord.RateLimited:
+                    except discord.RateLimited | discord.HTTPException:
                         continue
 
     @task_autopost.before_loop
