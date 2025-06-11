@@ -89,7 +89,7 @@ class Macro(commands.Cog):
                         await asyncio.sleep(random_delay)
                         await channel.send(self.ad)
 
-                    except discord.RateLimited | discord.HTTPException:
+                    except (discord.RateLimited, discord.HTTPException):
                         continue
 
     @task_autopost.before_loop
@@ -161,7 +161,7 @@ class Macro(commands.Cog):
                             if history and history[0] != self.ad:
                                 try:
                                     await channel.send(self.ad)
-                                except discord.RateLimited | discord.HTTPException:
+                                except (discord.RateLimited, discord.HTTPException):
                                     continue
 
                     except None or discord.errors.Forbidden:
