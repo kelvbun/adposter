@@ -178,6 +178,8 @@ class Macro(commands.Cog):
         except KeyError:
             print("[404]: no such path")
 
+        await ctx.message.add_reaction("\U00002705")
+
     @commands.command(name="show")
     async def show_channels(self, ctx: commands.Context, file: str) -> None:
         try:
