@@ -70,8 +70,6 @@ class Macro(commands.Cog):
     async def task_autopost(self) -> None:
         self.strip_channel_cache = [id.split(".")[0] for id in self.channel_cache]
 
-        print(self.strip_channel_cache)
-
         for channel_id in self.strip_channel_cache:
             random_delay = random.randint(6, 9)
             channel = self.bot.get_channel(int(channel_id))
@@ -84,13 +82,31 @@ class Macro(commands.Cog):
                     async for message in channel.history(limit=2, oldest_first=False)
                 ]
 
-                if self.bot.user and history and history[0] != self.bot.user.id:
-                    try:
-                        await asyncio.sleep(random_delay)
-                        await channel.send(self.ad)
+                if self.bot.user and history:
+                    last_user = channel.guild.get_member(history[0])
 
-                    except (discord.RateLimited, discord.HTTPException):
+                    if last_user:
+                        if len(history) == 2 and history[0] != last_user.bot and history[1] != self.bot.user.id:
+                            try:
+                                await asyncio.sleep(random_delay)
+                                await channel.send(self.ad)
+
+                            except (discord.RateLimited, discord.HTTPException):
+                                continue
+
+                    elif len(history) == 1 and history[0] != self.bot.user.id:
+                        try:
+                            await asyncio.sleep(random_delay)
+                            await channel.send(self.ad)
+
+                        except (discord.RateLimited, discord.HTTPException):
+                            continue
+
+                    else:
                         continue
+
+
+                    
 
     @task_autopost.before_loop
     async def before_auto_clock(self) -> None:
