@@ -25,18 +25,20 @@ class Bumper(commands.Cog):
 
     @tasks.loop(hours=2)
     async def autobumper(self):
-        if not str(os.getenv("BUMP_CHANNEL").isdigit():
+        bump_channel = os.getenv("BUMP_CHANNEL")
+    
+        if not (bump_channel and bump_channel.isdigit()):
             return
-
-        channel = self.bot.get_channel(int(str(os.getenv("BUMP_CHANNEL"))))
+    
+        channel = self.bot.get_channel(int(bump_channel))
         random_delay = random.randint(6, 9)
-
+    
         if channel and channel.guild and isinstance(channel, discord.TextChannel):
             check_perm = channel.permissions_for(cast(discord.Member, channel.guild.me))
-
+    
             if not check_perm.send_messages:
                 return
-
+    
             bump = next(
                 (
                     cmd
@@ -45,7 +47,7 @@ class Bumper(commands.Cog):
                 ),
                 None,
             )
-
+    
             if bump:
                 try:
                     await asyncio.sleep(random_delay)
@@ -53,7 +55,7 @@ class Bumper(commands.Cog):
                     logger.info(
                         f"[200]: bumped {channel.guild.name} | {channel.guild.id}"
                     )
-
+    
                 except Exception as e:
                     logger.error(f"[error]: {channel.guild.name}:\n{e}")
 
