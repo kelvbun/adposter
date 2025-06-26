@@ -25,6 +25,9 @@ class Bumper(commands.Cog):
 
     @tasks.loop(hours=2)
     async def autobumper(self):
+        if not str(os.getenv("BUMP_CHANNEL").isdigit():
+            return
+
         channel = self.bot.get_channel(int(str(os.getenv("BUMP_CHANNEL"))))
         random_delay = random.randint(6, 9)
 
