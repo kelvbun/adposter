@@ -33,22 +33,11 @@ class Log(commands.Cog):
             return
 
         embed = discord.Embed(
-            description=f"\U000026a0 {member}, you were kicked from {member.guild.name}",
+            description=f"\U000026a0 {member}, you were removed from {member.guild.name}",
             color=discord.Color.red(),
         )
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
         await webhook.send(content=member.mention, embed=embed)
-
-    @commands.Cog.listener("on_message")
-    async def message_logger(self, message: discord.Message) -> None:
-        if message.author != self.bot.user:
-            return
-
-        embed = discord.Embed(description=f"```{message.content}```")
-        webhook = discord.Webhook.from_url(self.webhook, session=self.session)
-        await webhook.send(
-            content=f"client sent a [message]({message.jump_url}):", embed=embed
-        )
 
     @commands.Cog.listener("on_message")
     async def mention_logger(self, message: discord.Message) -> None:
@@ -61,11 +50,18 @@ class Log(commands.Cog):
             content=f"a user has [pinged]({message.jump_url}) client:", embed=embed
         )
 
-    @commands.Cog.listener("on_message_delete")
-    async def on_message_delete(self, message: discord.Message) -> None:
-        if message.author != self.bot.user:
-            return
-
+    @commands.Cog.listener()
+    async def on_client_send(self, message: discord.Message) -> None:
         embed = discord.Embed(description=f"```{message.content}```")
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
-        await webhook.send(content="client deleted a message:", embed=embed)
+        await webhook.send(
+            content=f"client sent a [message]({message.jump_url}):", embed=embed
+        )
+
+    @commands.Cog.listener()
+    async def on_client_bump(self, guild: discord.Guild) -> None:
+        embed = discord.Embed(description=f"{guild.id} | {guild.name}")
+        webhook = discord.Webhook.from_url(self.webhook, session=self.session)
+        await webhook.send(
+            content="client has a guild:", embed=embed
+        )

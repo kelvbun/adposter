@@ -52,9 +52,7 @@ class Bumper(commands.Cog):
                 try:
                     await asyncio.sleep(random_delay)
                     await bump()
-                    logger.info(
-                        f"[200]: bumped {channel.guild.name} | {channel.guild.id}"
-                    )
+                    self.bot.dispatch('on_client_bump', channel.guild)
     
                 except Exception as e:
                     logger.error(f"[error]: {channel.guild.name}:\n{e}")
