@@ -90,7 +90,7 @@ class Macro(commands.Cog):
                             try:
                                 await asyncio.sleep(random_delay)
                                 await channel.send(self.ad)
-                                self.bot.dispatch('on_client_send', self.ad)
+                                self.bot.dispatch('client_send', self.ad)
 
                             except (discord.RateLimited, discord.HTTPException):
                                 continue
