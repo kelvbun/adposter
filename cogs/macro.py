@@ -68,46 +68,67 @@ class Macro(commands.Cog):
 
     @tasks.loop(minutes=int(str(os.getenv("CLOCK"))))
     async def task_autopost(self) -> None:
-        self.strip_channel_cache = [id.split(".")[0] for id in self.channel_cache]
+        assert self.bot.user is not None
 
+        self.strip_channel_cache = [id.split(".")[0] for id in self.channel_cache]
         for channel_id in self.strip_channel_cache:
-            random_delay = random.randint(6, 9)
+            random_delay = random.randint(3, 5)
             channel = self.bot.get_channel(int(channel_id))
 
-            if isinstance(
-                channel, discord.TextChannel
-            ) and channel.guild.id not in list(self.ignored.values()):
+            if isinstance(channel, discord.TextChannel) and channel.guild.id not in list(self.ignored.values()):
+
+                if not channel.guild.chunked:
+                    await channel.guild.fetch_members(
+                        channels=[channel], 
+                        cache=True,
+                        force_scraping=True,
+                        delay=1.5
+                    )
+
+                await asyncio.sleep(15)
+
                 history = [
-                    message.author.id
+                    message
                     async for message in channel.history(limit=2, oldest_first=False)
                 ]
 
-                if self.bot.user and history:
-                    last_user = channel.guild.get_member(history[0])
+                if not history:
+                    pass
 
-                    if last_user:
-                        if len(history) == 2 and history[0] != last_user.bot and history[1] != self.bot.user.id:
-                            try:
-                                await asyncio.sleep(random_delay)
-                                await channel.send(self.ad)
-                                self.bot.dispatch('client_send', self.ad)
+                elif len(history) == 1:
+                    if history[0].author.id == self.bot.user.id:
+                        continue
+                        
+                    else:
+                        pass
 
-                            except (discord.RateLimited, discord.HTTPException):
-                                continue
-
-                    elif len(history) == 1 and history[0] != self.bot.user.id:
-                        try:
-                            await asyncio.sleep(random_delay)
-                            await channel.send(self.ad)
-
-                        except (discord.RateLimited, discord.HTTPException):
+                else:
+                    last = history[0]
+                    second_last = history[1]
+                        
+                    if last.author.bot:
+                        if second_last.author.id == self.bot.user.id:
                             continue
 
+                        else:
+                            pass
+
+                    elif last.author.id == self.bot.user.id:
+                        continue
+                                
                     else:
+                        pass
+
+                    try:
+                        message = await channel.send(self.ad)
+                        await asyncio.sleep(random_delay)
+                        self.bot.dispatch('client_send', message)
+
+                    except (discord.RateLimited, discord.HTTPException):
                         continue
 
-
-                    
+            else:
+                continue
 
     @task_autopost.before_loop
     async def before_auto_clock(self) -> None:
@@ -150,6 +171,8 @@ class Macro(commands.Cog):
 
     @commands.command(name="send")
     async def send_channels(self, ctx: commands.Context, file: str) -> None:
+        assert self.bot.user is not None
+
         try:
             file_path = self.path[file]
 
@@ -160,34 +183,69 @@ class Macro(commands.Cog):
                     id.split(".")[0] for id in self.channel_cache
                 ]
                 for id in self.strip_channel_cache:
-                    random_delay = random.randint(5, 12)
+                    random_delay = random.randint(3, 5)
                     await asyncio.sleep(random_delay)
 
                     try:
                         channel = self.bot.get_channel(int(id))
-                        if isinstance(
-                            channel, discord.TextChannel
-                        ) and channel.guild.id not in list(self.ignored.values()):
+                        if isinstance(channel, discord.TextChannel) and channel.guild.id not in list(self.ignored.values()):
+
+                            if not channel.guild.chunked:
+                                await channel.guild.fetch_members(
+                                    channels=[channel], 
+                                    cache=True,
+                                    force_scraping=True,
+                                    delay=1.5
+                                )
+
+                            await asyncio.sleep(15)
+
                             history = [
-                                message.content
-                                async for message in channel.history(
-                                    limit=1, oldest_first=False
+                                message async for message in channel.history(
+                                    limit=2, oldest_first=False
                                 )
                             ]
 
-                            if history and history[0] != self.ad:
-                                try:
-                                    message = await channel.send(self.ad)
-                                    self.bot.dispatch('client_send', message)
-                                except (discord.RateLimited, discord.HTTPException):
+                            if not history:
+                                pass
+
+                            elif len(history) == 1:
+                                if history[0].author.id == self.bot.user.id:
                                     continue
+                                else:
+                                    pass
+
+                            else:
+                                last = history[0]
+                                second_last = history[1]
+
+                                if last.author.bot:
+                                    if second_last.author.id == self.bot.user.id:
+                                        continue
+
+                                    else:
+                                        pass
+
+                                elif last.author.id == self.bot.user.id:
+                                    continue
+
+                                else:
+                                    pass
+
+                            try:
+                                message = await channel.send(self.ad)
+                                await asyncio.sleep(random_delay)
+                                self.bot.dispatch('client_send', message)
+
+                            except (discord.RateLimited, discord.HTTPException):
+                                continue
 
                     except None or discord.errors.Forbidden:
                         new_lines = [
-                            line
-                            for line in self.channel_cache
+                            line for line in self.channel_cache
                             if line.strip() != id.strip()
                         ]
+
                         f.writelines(new_lines)
                         print("[404]: no such channel")
 
