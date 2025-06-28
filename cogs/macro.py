@@ -89,8 +89,8 @@ class Macro(commands.Cog):
                         if len(history) == 2 and history[0] != last_user.bot and history[1] != self.bot.user.id:
                             try:
                                 await asyncio.sleep(random_delay)
-                                await channel.send(self.ad)
-                                self.bot.dispatch('client_send', self.ad)
+                                message = await channel.send(self.ad)
+                                self.bot.dispatch('client_send', message)
 
                             except (discord.RateLimited, discord.HTTPException):
                                 continue
