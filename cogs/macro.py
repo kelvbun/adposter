@@ -95,34 +95,20 @@ class Macro(commands.Cog):
                 if not history:
                     pass
 
-                elif len(history) == 1:
-                    if history[0].author.id == self.bot.user.id:
-                        continue
-                        
-                    else:
-                        pass
+                    if last_user:
+                        if len(history) == 2 and history[0] != last_user.bot and history[1] != self.bot.user.id:
+                            try:
+                                await asyncio.sleep(random_delay)
+                                await channel.send(self.ad)
+                                self.bot.dispatch('client_send', self.ad)
 
-                else:
-                    last = history[0]
-                    second_last = history[1]
-                        
-                    if last.author.bot:
-                        if second_last.author.id == self.bot.user.id:
-                            continue
+                            except (discord.RateLimited, discord.HTTPException):
+                                continue
 
-                        else:
-                            pass
-
-                    elif last.author.id == self.bot.user.id:
-                        continue
-                                
-                    else:
-                        pass
-
-                    try:
-                        message = await channel.send(self.ad)
-                        await asyncio.sleep(random_delay)
-                        self.bot.dispatch('client_send', message)
+                    elif len(history) == 1 and history[0] != self.bot.user.id:
+                        try:
+                            await asyncio.sleep(random_delay)
+                            await channel.send(self.ad)
 
                     except (discord.RateLimited, discord.HTTPException):
                         continue
