@@ -177,8 +177,8 @@ class Macro(commands.Cog):
 
                             if history and history[0] != self.ad:
                                 try:
-                                    await channel.send(self.ad)
-                                    self.bot.dispatch('on_client_send', self.ad)
+                                    message = await channel.send(self.ad)
+                                    self.bot.dispatch('client_send', message)
                                 except (discord.RateLimited, discord.HTTPException):
                                     continue
 

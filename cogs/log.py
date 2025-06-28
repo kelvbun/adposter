@@ -25,6 +25,7 @@ class Log(commands.Cog):
             color=discord.Color.red(),
         )
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
+        
         await webhook.send(content=member.mention, embed=embed)
 
     @commands.Cog.listener("on_member_remove")
@@ -37,6 +38,7 @@ class Log(commands.Cog):
             color=discord.Color.red(),
         )
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
+
         await webhook.send(content=member.mention, embed=embed)
 
     @commands.Cog.listener("on_message")
@@ -46,22 +48,27 @@ class Log(commands.Cog):
 
         embed = discord.Embed(description=f"```{message.content}```")
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
+        
         await webhook.send(
             content=f"a user has [pinged]({message.jump_url}) client:", embed=embed
         )
 
     @commands.Cog.listener()
     async def on_client_send(self, message: discord.Message) -> None:
+        assert message.guild is not None # dispatch on ad posting only
+
         embed = discord.Embed(description=f"```{message.content}```")
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
+
         await webhook.send(
-            content=f"client sent a [message]({message.jump_url}):", embed=embed
+            content=f"client sent a [message]({message.jump_url}) in **{message.guild.name}**:", embed=embed
         )
 
     @commands.Cog.listener()
     async def on_client_bump(self, guild: discord.Guild) -> None:
         embed = discord.Embed(description=f"{guild.id} | {guild.name}")
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
+
         await webhook.send(
-            content="client has a guild:", embed=embed
+            content=f"client has bumped **{guild.name}**:", embed=embed
         )

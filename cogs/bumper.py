@@ -6,8 +6,6 @@ import os
 import discord
 from discord.ext import commands, tasks
 
-logger = logging.getLogger(__name__)
-
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Bumper(bot))
@@ -54,8 +52,8 @@ class Bumper(commands.Cog):
                     await bump()
                     self.bot.dispatch('client_bump', channel.guild)
     
-                except Exception as e:
-                    logger.error(f"[error]: {channel.guild.name}:\n{e}")
+                except Exception:
+                    pass
 
     @autobumper.before_loop
     async def before_autobumper(self):
