@@ -69,13 +69,11 @@ class Logger(commands.Cog):
 
     @commands.Cog.listener()
     async def on_client_send(self, message: discord.Message) -> None:
-        assert message.guild is not None  # dispatch on ad posting only
-
         embed = discord.Embed(description=f"```{message.content}```")
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
 
         await webhook.send(
-            content=f"[200]: Bao sent a [message]({message.jump_url}) in **{message.guild.name}**:",
+            content=f"[200]: Bao sent a [message]({message.jump_url}) in **{message.guild.name if message.guild else 'DM'}**:",
             embed=embed,
         )
 
