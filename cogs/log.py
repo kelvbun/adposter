@@ -28,7 +28,7 @@ class Logger(commands.Cog):
             return
 
         embed = discord.Embed(
-            description=f"\U000026a0 {member}, you were banned from {guild.name}",
+            description=f"{member}, you were banned from {guild.name}",
             color=discord.Color.red(),
         )
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
@@ -41,7 +41,7 @@ class Logger(commands.Cog):
             return
 
         embed = discord.Embed(
-            description=f"\U000026a0 {member}, you were removed from {member.guild.name}",
+            description=f"{member}, you were removed from {member.guild.name}",
             color=discord.Color.red(),
         )
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
@@ -64,7 +64,7 @@ class Logger(commands.Cog):
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
 
         await webhook.send(
-            content=f"a user has [pinged]({message.jump_url}) client:", embed=embed
+            content=f"{message.author.id} | {message.author.mention} has [pinged]({message.jump_url}) the client:", embed=embed
         )
 
     @commands.Cog.listener()
@@ -75,7 +75,7 @@ class Logger(commands.Cog):
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
 
         await webhook.send(
-            content=f"client sent a [message]({message.jump_url}) in **{message.guild.name}**:",
+            content=f"[200]: Bao sent a [message]({message.jump_url}) in **{message.guild.name}**:",
             embed=embed,
         )
 
@@ -84,4 +84,4 @@ class Logger(commands.Cog):
         embed = discord.Embed(description=f"{guild.id} | {guild.name}")
         webhook = discord.Webhook.from_url(self.webhook, session=self.session)
 
-        await webhook.send(content=f"client has bumped **{guild.name}**:", embed=embed)
+        await webhook.send(content=f"[200]: Bao has bumped **{guild.name}**:", embed=embed)
