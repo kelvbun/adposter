@@ -234,6 +234,8 @@ class Macro(commands.Cog):
 
     @commands.command(name="show")
     async def show_channels(self, ctx: commands.Context, file: str) -> None:
+        await self.bot.load_promo()
+    
         try:
             paginator = commands.Paginator(prefix="", suffix="")
 
