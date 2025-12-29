@@ -275,6 +275,7 @@ class Macro(commands.Cog):
             self.task_autopost.start()
             await ctx.send("Bao has turned on auto posting")
 
+    @commands.cooldown(1, 7200, commands.BucketType.user)
     @commands.command(name="set_ad")
     async def set_ad(self, ctx: commands.Context[Bao], *, ad: str) -> None:
         self.ad = ad
