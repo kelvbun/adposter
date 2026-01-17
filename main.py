@@ -32,7 +32,7 @@ class Bao(commands.Bot):
         )
 
         await self.change_presence(
-            status=discord.Status.offline,
+            status=discord.Status.invisible,
         )
 
     async def load_promo(self) -> None:
