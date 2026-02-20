@@ -1,6 +1,7 @@
 import os
 
 import discord
+import aiohttp
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -8,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-class Bao(commands.Bot):
+class AutoPostClient(commands.Bot):
     channel_cache: list[str] = []
     file_path: dict[str, str] = {
         "promo": "data/promo.txt",
@@ -25,15 +26,10 @@ class Bao(commands.Bot):
         )
 
     async def on_ready(self):
-        print(
-            f"[200]: Bao has logged on to: {self.user.name} | {self.user.id}"
-            if self.user
-            else "[404]: Bao thinks the user token is invalid"
-        )
-
-        await self.change_presence(
-            status=discord.Status.invisible,
-        )
+        assert isinstance(self.user, discord.ClientUser)
+        
+        print(f"logged on to: {self.user.name} | {self.user.id}")
+        await self.change_presence(status=discord.Status.invisible)
 
     async def load_promo(self) -> None:
         with open(self.file_path["promo"], "r+") as f:
@@ -44,6 +40,7 @@ class Bao(commands.Bot):
         print(self.channel_cache)
 
     async def setup_hook(self) -> None:
+        self.session = aiohttp.ClientSession()
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"cogs.{filename[:-3]}")
@@ -52,5 +49,5 @@ class Bao(commands.Bot):
 
 
 if __name__ == "__main__":
-    bot = Bao()
+    bot = AutoPostClient()
     bot.run(str(os.getenv("TOKEN")), reconnect=True)

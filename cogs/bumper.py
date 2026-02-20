@@ -9,21 +9,19 @@ import re
 import os
 import discord
 from discord.ext import commands, tasks
+from utils import NUM_REGEX
 
 if TYPE_CHECKING:
-    from main import Bao
+    from main import AutoPostClient
 
 
-NUM_REGEX = r"(^[-+]?[0-9]+$)"
-
-
-async def setup(bot: Bao) -> None:
+async def setup(bot: AutoPostClient) -> None:
     await bot.add_cog(Bumper(bot))
 
 
 class Bumper(commands.Cog):
-    def __init__(self, bot: Bao):
-        self.bot: Bao = bot
+    def __init__(self, bot: AutoPostClient):
+        self.bot: AutoPostClient = bot
 
     async def cog_load(self) -> None:
         self.autobumper.start()

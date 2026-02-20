@@ -9,22 +9,19 @@ import os
 
 import discord
 from discord.ext import commands, tasks
+from utils import INVITE_REGEX, CHANNEL_REGEX
 
 if TYPE_CHECKING:
-    from main import Bao
+    from main import AutoPostClient
 
 
-INVITE_REGEX = r"(?:https?://)?discord(?:app)?\.(?:com/invite|gg)/[a-zA-Z0-9]+/?"
-CHANNEL_REGEX = r"(?:\b|[^a-zA-Z0-9])(?:sell|your?s?|you|clb?s?|collab?s?|ur-(?:promo|collab|shop|server)s?|urpromo?s?)(?:\b|[^a-zA-Z0-9])"
-
-
-async def setup(bot: Bao) -> None:
+async def setup(bot: AutoPostClient) -> None:
     await bot.add_cog(Macro(bot))
 
 
 class Macro(commands.Cog):
-    def __init__(self, bot: Bao):
-        self.bot: Bao = bot
+    def __init__(self, bot: AutoPostClient):
+        self.bot: AutoPostClient = bot
         self.ad: str = ""
         self.ignored: dict[str, int] = {}
 
@@ -152,7 +149,7 @@ class Macro(commands.Cog):
             f.close()
 
             await ctx.send(
-                f"[200]: Bao scanned `{len(self.bot.channel_cache)}/{guild_count}` channels to guilds"
+                f"[200]: AutoPostClient scanned `{len(self.bot.channel_cache)}/{guild_count}` channels to guilds"
             )
 
         except KeyError:
@@ -228,7 +225,7 @@ class Macro(commands.Cog):
                     pass  # too lazy to update the txt file
 
         except KeyError:
-            print("[404]: Bao found no such path")
+            print("[404]: AutoPostClient found no such path")
 
         await ctx.message.add_reaction("\U00002705")
 
@@ -252,7 +249,7 @@ class Macro(commands.Cog):
                         )
 
         except KeyError:
-            return print("[404]: Bao couldn't such path")
+            return print("[404]: AutoPostClient couldn't such path")
 
         for page in paginator.pages:
             await ctx.send(page)
@@ -263,21 +260,21 @@ class Macro(commands.Cog):
     async def set_clock(self, ctx: commands.Context, min: int) -> None:
         os.environ["CLOCK"] = str(min)
         self.task_autopost.change_interval(minutes=min)
-        await ctx.send(f"Bao has set auto post interval to every {min} mins")
+        await ctx.send(f"AutoPostClient has set auto post interval to every {min} mins")
 
     @commands.command(name="toggle_clock")
     async def toggle_clock(self, ctx: commands.Context) -> discord.Message | None:
         if self.task_autopost.is_running():
             self.task_autopost.cancel()
-            await ctx.send("Bao has turned off auto posting")
+            await ctx.send("AutoPostClient has turned off auto posting")
 
         else:
             self.task_autopost.start()
-            await ctx.send("Bao has turned on auto posting")
+            await ctx.send("AutoPostClient has turned on auto posting")
 
     @commands.cooldown(1, 7200, commands.BucketType.user)
     @commands.command(name="set_ad")
-    async def set_ad(self, ctx: commands.Context[Bao], *, ad: str) -> None:
+    async def set_ad(self, ctx: commands.Context[AutoPostClient], *, ad: str) -> None:
         self.ad = ad
         regex = re.compile(INVITE_REGEX, re.IGNORECASE)
         matches = regex.findall(ad)
