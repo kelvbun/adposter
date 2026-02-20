@@ -26,6 +26,7 @@ class Macro(commands.Cog):
         self.ads: dict[str, str] = {}  # name -> content
         self.ignored: dict[str, int] = {}
         self.ads_path = Path("./storage/ads")
+        self.ad_index: int = 0
 
     async def cog_load(self) -> None:
         self.load_ads()
@@ -66,7 +67,7 @@ class Macro(commands.Cog):
 
         return bucket
 
-    @tasks.loop(minutes=int(str(os.getenv("CLOCK"))))
+    @tasks.loop(hours=2)
     async def autopost(self) -> None:
         assert isinstance(self.bot.user, discord.ClientUser)
 
@@ -74,7 +75,7 @@ class Macro(commands.Cog):
             return
 
         ads = list(self.ads.values())
-        ad_index = 0
+        ad = ads[self.ad_index % len(ads)]
 
         for channel_id in self.bot.channel_cache:
             channel = self.bot.get_channel(channel_id)
@@ -104,14 +105,14 @@ class Macro(commands.Cog):
                         continue
 
                 try:
-                    humanize = random.randint(3, 6)
-                    await asyncio.sleep(humanize)
-                    message = await channel.send(ads[ad_index % len(ads)])
-                    ad_index += 1
+                    message = await channel.send(ad)
                     self.bot.dispatch("client_send", message)
+                    await asyncio.sleep(random.randint(4, 8))
 
                 except (discord.RateLimited, discord.HTTPException):
                     continue
+
+        self.ad_index += 1
 
     @autopost.before_loop
     async def before_auto_clock(self) -> None:
