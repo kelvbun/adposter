@@ -45,22 +45,28 @@ class Macro(commands.Cog):
 
     async def find_channel(self, guild: discord.Guild) -> list[str]:
         regex = re.compile(INVITE_REGEX, re.IGNORECASE)
+        semaphore = asyncio.Semaphore(3)
 
         async def check_channel(channel: discord.TextChannel) -> str | None:
-            try:
-                messages = [
-                    message async for message in channel.history(limit=10, oldest_first=False)
-                ]
-                matches = list(filter(lambda m: regex.search(m.content), messages))
-                unique_authors = {m.author.id for m in matches}
+            async with semaphore:
+                try:
+                    await asyncio.sleep(random.uniform(0.5, 1.5))
+                    messages = [
+                        message async for message in channel.history(limit=10, oldest_first=False)
+                    ]
+                    matches = list(filter(lambda m: regex.search(m.content), messages))
+                    unique_authors = {m.author.id for m in matches}
 
-                if len(matches) > 5 and len(unique_authors) > 2:
-                    return str(channel.id)
+                    if len(matches) > 5 and len(unique_authors) > 2:
+                        return str(channel.id)
 
-            except discord.Forbidden:
-                pass
+                except discord.Forbidden:
+                    pass
+                except discord.HTTPException as e:
+                    if e.status == 429:
+                        await asyncio.sleep(5)
 
-            return None
+                return None
 
         text_channels = [c for c in guild.channels if isinstance(c, discord.TextChannel)]
         results = await asyncio.gather(*[check_channel(c) for c in text_channels])
