@@ -85,11 +85,14 @@ class Macro(commands.Cog):
                     async for message in channel.history(limit=2, oldest_first=False)
                 ]
 
-                if len(history) == 1:
+                if not history:
+                    pass
+
+                elif len(history) == 1:
                     if history[0].author.id == self.bot.user.id:
                         continue
 
-                elif len(history) >= 2:
+                else:
                     last = history[0]
                     second_last = history[1]
 
