@@ -73,8 +73,10 @@ class Macro(commands.Cog):
         if not self.ads:
             return
 
+        ads = list(self.ads.values())
+        ad_index = 0
+
         for channel_id in self.bot.channel_cache:
-            random_delay = random.randint(3, 5)
             channel = self.bot.get_channel(channel_id)
 
             if isinstance(channel, discord.TextChannel) and channel.guild.id not in list(self.ignored.values()):
@@ -99,9 +101,8 @@ class Macro(commands.Cog):
                         continue
 
                 try:
-                    ad = random.choice(list(self.ads.values()))
-                    message = await channel.send(ad)
-                    await asyncio.sleep(random_delay)
+                    message = await channel.send(ads[ad_index % len(ads)])
+                    ad_index += 1
                     self.bot.dispatch("client_send", message)
 
                 except (discord.RateLimited, discord.HTTPException):
@@ -128,7 +129,6 @@ class Macro(commands.Cog):
         for page in paginator.pages:
             await ctx.send(page)
 
-    @commands.cooldown(1, 7200, commands.BucketType.user)
     @commands.command(name="set_ad")
     async def set_ad(self, ctx: commands.Context[AutoPostClient], name: str, *, ad: str) -> None:
         file = self.ads_path / f"{name}.txt"
