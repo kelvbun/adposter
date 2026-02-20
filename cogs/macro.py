@@ -101,6 +101,8 @@ class Macro(commands.Cog):
                         continue
 
                 try:
+                    humanize = random.randint(3, 6)
+                    await asyncio.sleep(humanize)
                     message = await channel.send(ads[ad_index % len(ads)])
                     ad_index += 1
                     self.bot.dispatch("client_send", message)
