@@ -42,8 +42,8 @@ class Logger(commands.Cog):
             description=f"{member}, you were removed from {member.guild.name}",
             color=discord.Color.red(),
         )
-        webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
 
+        webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
         await webhook.send(content=member.mention, embed=embed)
 
     @commands.Cog.listener("on_message")
@@ -71,7 +71,7 @@ class Logger(commands.Cog):
         webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
 
         await webhook.send(
-            content=f"[200]: AutoPostClient sent a [message]({message.jump_url}) in **{message.guild.name if message.guild else 'DM'}**:",
+            content=f"client sent a [message]({message.jump_url}) in **{message.guild.name if message.guild else 'DM'}**:",
             embed=embed,
         )
 
@@ -80,4 +80,4 @@ class Logger(commands.Cog):
         embed = discord.Embed(description=f"{guild.id} | {guild.name}")
         webhook = discord.Webhook.from_url(self.webhook, session=self.bot.session)
 
-        await webhook.send(content=f"[200]: AutoPostClient has bumped **{guild.name}**:", embed=embed)
+        await webhook.send(content=f"client has bumped **{guild.name}**:", embed=embed)
