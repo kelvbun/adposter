@@ -44,12 +44,9 @@ class Macro(commands.Cog):
                 self.ads[file.stem] = content
 
     async def find_channel(self, guild: discord.Guild) -> list[str]:
-        bucket: list[str] = []
         regex = re.compile(INVITE_REGEX, re.IGNORECASE)
 
-        for channel in guild.channels:
-            if not isinstance(channel, discord.TextChannel):
-                continue
+        async def check_channel(channel: discord.TextChannel) -> str | None:
             try:
                 messages = [
                     message async for message in channel.history(limit=10, oldest_first=False)
@@ -58,13 +55,17 @@ class Macro(commands.Cog):
                 unique_authors = {m.author.id for m in matches}
 
                 if len(matches) > 5 and len(unique_authors) > 2:
-                    bucket.append(str(channel.id))
-                    break
+                    return str(channel.id)
 
             except discord.Forbidden:
                 pass
 
-        return bucket
+            return None
+
+        text_channels = [c for c in guild.channels if isinstance(c, discord.TextChannel)]
+        results = await asyncio.gather(*[check_channel(c) for c in text_channels])
+        found = next((r for r in results if r is not None), None)
+        return [found] if found else []
 
     @tasks.loop(minutes=int(str(os.getenv("CLOCK"))))
     async def autopost(self) -> None:
