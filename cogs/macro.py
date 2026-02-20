@@ -59,6 +59,7 @@ class Macro(commands.Cog):
 
                 if len(matches) > 5 and len(unique_authors) > 2:
                     bucket.append(str(channel.id))
+                    break
 
             except discord.Forbidden:
                 pass
