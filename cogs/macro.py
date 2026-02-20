@@ -89,7 +89,7 @@ class Macro(commands.Cog):
                     if history[0].author.id == self.bot.user.id:
                         continue
 
-                else:
+                elif len(history) >= 2:
                     last = history[0]
                     second_last = history[1]
 
